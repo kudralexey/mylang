@@ -104,6 +104,14 @@ class WPML extends Single {
         if ( ! wp_is_post_revision( $my_post->ID ) ) {
             $post_id = $this->make_duplicate( $my_post->ID );
             $my_post->ID = $post_id;
+
+            if ( ! empty( $my_post->post_parent ) ) {
+                $parent = get_post( $my_post->post_parent );
+                if ( isset( $parent->post_type ) ) {
+                    $my_post->post_parent = wpml_object_id_filter( $my_post->post_parent, $parent->post_type, true, $this->target_language );
+                }
+            }
+            
             remove_all_actions( 'save_post' );
             wp_update_post( $my_post, false, false );
         }
